@@ -1,6 +1,5 @@
 receptor = gart.pdbqt
 ligand = xx07.pdbqt
-
 out = test.pdbqt
 
 center_x = 19.6
@@ -10,13 +9,15 @@ size_x = 62.0
 size_y = 69.7
 size_z = 70.2
 
+### mandatory do not change ####
 local_only = false
 gnm = true
+minimize = 1
+################################
+
 approximation = linear
 cpu = 10
 scoring = vinardo
-exhaustiveness = 20
 
-minimize = 1
+exhaustiveness = 20
 minimize_iters = 50000
-energy_range = 20
