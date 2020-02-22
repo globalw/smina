@@ -22,14 +22,17 @@ A comparison of computational speed and accuracy is exhibitable in the following
 ![Image of SpeednAcc](../assets/speedacc.png?raw=true)
 
 The image shows a comparisaon of computation time and computed energies of target human glyci-
-namide ribonucleotide synthetase (PDB: 2QK4, DUD-Database 2006) with Autodock
+namide ribonucleotide synthetase (PDB: 2QK4, [DUD-Database 2006](http://dud.docking.org/r2/)) with Autodock
 Smina (red) and the stochastic global newton method (blue)
 
 The Receiver-Operator-Characteristic (ROC) of the calucations show that the computed energies are indeed resulting in more accurate Rankings of true binders as decoy compounds:
 
-![Image of ROCSMINA](../assets/roccomparegnm.png#thumbnail)
+### ROC GNM
+![Image of ROCSMINA](../assets/roccomparegnm.png)
 
-![Image of ROCSMINA](../assets/roccomparesmina.png#thumbnail)
+### ROC SMINA
+
+![Image of ROCSMINA](../assets/roccomparesmina.png)
 
 
 smina which is a fork of Autodock Vina (http://vina.scripps.edu/) that 
