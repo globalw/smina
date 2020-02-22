@@ -28,41 +28,16 @@ Smina (red) and the stochastic global newton method (blue)
 The Receiver-Operator-Characteristic (ROC) of the calucations show that the computed energies are indeed resulting in more accurate Rankings of true binders as decoy compounds:
 
 ### ROC GNM
-![Image of ROCSMINA](../assets/roccomparegnm.png)
+![Image of ROCSMINA](../assets/roccomparegnm.png?raw=true)
 
 ### ROC SMINA
 
-![Image of ROCSMINA](../assets/roccomparesmina.png)
+![Image of ROCSMINA](../assets/roccomparesmina.png?raw=true)
 
 
-smina which is a fork of Autodock Vina (http://vina.scripps.edu/) that 
-focuses on improving scoring and minimization.  Changes from the
-standard Vina (version 1.1.2) include:
- -comprehensive support for ligand molecular formats (via OpenBabel)*
- -support for multi-ligand files (e.g., an sdf file)*
- -support for addition term types (e.g., desolvation, electrostatics)
- -support for custom, user-parameterized scoring functions (see --custom_scoring)
- -automatic box creation based on a user-specified bound ligand
- -allow the output of more than 20 docking poses
- -vastly improved minimization algorithms (--minimize goes to convergence)
- -*experimental* easily define flexible residues of receptor (--flexres and --flexdist)
- 
-For workflows where AutoDock Vina is used for minimization (local_only) 
-as opposed to of docking, these changes make Vina much easer to use and 
-10-20x faster. Docking performance is about the same since partial charge 
-calculation and file i/o isn't such a big part of the performance.
+## Usage
 
-If you find smina useful, please cite our paper: 
-http://pubs.acs.org/doi/abs/10.1021/ci300604z
-
-*Non-pdbqt ligand files must have partial charges added.  This is done
-using OpenBabel and will get different results than the prepare_ligand4.py
-script that comes with AutoDock Tools.
-
-Pre-built binaries are provided that were built on Ubuntu 14.04.  The main
-dependencies are boost (1.54) and openbabel.  A static binary is provided
-in case these dependencies cannot be met (however, it probably still will
-not work if the kernel is older than 2.6.24).
+The program is executed as usual with the following output upon parameterless execution.
 ```
 Input:
   -r [ --receptor ] arg rigid part of the receptor (PDBQT)
@@ -100,6 +75,8 @@ Scoring and minimization options:
                                scales with rotors and usually isn't sufficient 
                                for convergence
   --accurate_line              use accurate line search
+  --gnm                        Enable the global newton method. Default is 
+                               false
   --minimize_early_term        Stop minimization before convergence conditions 
                                are fully met.
   --approximation arg          approximation (linear, spline, or exact) to use
@@ -147,7 +124,11 @@ Information (optional):
 
 ```
 
+The additional option `--gnm` is by default false, however usage of the original smina functions is to be dealt with caution. They have not been tested with the current implementation. The `--exhaustiveness` parameter will be a measure of how many gnm optimizations will be run. Setting this option with `--exhaustivenes 10` will result in ten runs of the gnm optimizer once gnm option is set to `--gnm 1`. smina will output the list of best runs of the ten runs. The parameter `--minimize_iters` will specify the number of iterations of each optimization run of gnm. 
 
+There is a trade-off between number of optimizations specified with the `--exhaustiveness`-parameter and the `--minimize_iters`-parameter. Empirically the method has shown a good performance with the ratio of `--exhaustiveness 300` and `--minimize_iters 500` but results may vary with different cases.
+
+The optimizer can be configured with a configuration file. 
 
 
 The custom scoring file consists of a weight, term description, and optional
