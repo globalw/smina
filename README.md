@@ -1,21 +1,5 @@
 # GNM UPDATE
 
-## Setup - Source Development
-
-This fork of smina includes a disclosed (FINALLY!) algorithm for global optimization. So far the project is setup to be build and developed from source on IDEs:
-
-Eclipse IDE for C/C++ Developers Version: 2019-12 (4.14.0)
-
-Eclipse IDE for C/C++ Developers Version: Oxygen.3a Release (4.7.3a)
-
-The project has been setup such that you can import it as an existing project to workspace:
-
-![Image of Import](../assets/import.png?raw=true)
-
-Other versions of eclipse might also work fine. 
-
-Everybody who is a commandline enthusiast can treat the project as a makefile-project as usual.
-
 ## Performance
 
 Utilizing the gnm optimizer can enable researchers to calculate faster and better results of their respective protein-ligand docking problem on very few resources. That is if you are used to work with the popular autodock vina/smina docking software.
@@ -37,11 +21,38 @@ The Receiver-Operator-Characteristic (ROC) of the calucations shows that the com
 Computaion of Protein-Ligand-Docking problem and evaluation of the Receiver-Operation-Characteristic of PDB: 2QK4, [DUD-Database 2006](http://dud.docking.org/r2/)) Left: Using Autodock Smina form Results shown in the Performance-Section
  (red) Right: Using the projected global newton method (blue).
 
-# Reference
+## Reference
 
 This work has been a collaboration with Konrad-Zuse-Institue Berlin and Technical University Berlin. If you want to get more insight in the mathematical workings, you can find further reference [here](https://opus4.kobv.de/opus4-zib/frontdoor/index/index/start/4/rows/10/sortfield/score/sortorder/desc/searchtype/simple/query/Bender/docId/7707)
 
 Please cite accordingly if you find this useful.
+
+### Preliminaries
+
+* [Openbabel](http://openbabel.org/wiki/Main_Page)
+* [Boost Libraries](https://www.boost.org/)
+
+#### Optional
+
+* [Eclipse IDE for C/C++ Developers Version: 2019-12 (4.14.0)](https://www.eclipse.org/downloads/packages/release/kepler/sr2/eclipse-ide-cc-developers)
+* [MGLTools](http://mgltools.scripps.edu/downloads)
+
+## Setup - Source Development
+
+This fork of smina includes a disclosed (FINALLY!) algorithm for global optimization. So far the project is setup to be build and developed from source on IDEs:
+
+Eclipse IDE for C/C++ Developers Version: 2019-12 (4.14.0)
+
+Eclipse IDE for C/C++ Developers Version: Oxygen.3a Release (4.7.3a)
+
+The project has been setup such that you can import it as an existing project to workspace:
+
+![Image of Import](../assets/import.png?raw=true)
+
+Other versions of eclipse might also work fine. 
+
+Everybody who is a commandline enthusiast can treat the project as a makefile-project as usual.
+
  
 # Usage
 
