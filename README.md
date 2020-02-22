@@ -128,7 +128,7 @@ The additional option `--gnm` is by default false, however usage of the original
 
 There is a trade-off between number of optimizations specified with the `--exhaustiveness`-parameter and the `--minimize_iters`-parameter. Empirically the method has shown a good performance with the ratio of `--exhaustiveness 300` and `--minimize_iters 500` but results may vary with different cases.
 
-The optimizer can be configured with a configuration file. 
+The optimizer can be configured with a configuration file. You can find an example in the example folder in the `conf.txt`-file. Additional pdbt-files for a test run can be found in the example folder as well.
 
 
 The custom scoring file consists of a weight, term description, and optional
@@ -166,17 +166,18 @@ Example (all weights 1.0, all term types listed):
 Atom Type Terms
 You can define custom functionals between pairs of specific atom types:
 
+```
 atom_type_gaussian(t1=,t2=,o=0,_w=0,_c=8)	guassian potential between specified atom types
 atom_type_linear(t1=,t2=,g=0,_b=0,_c=8)	linear potential between specified atom types
 atom_type_quadratic(t1=,t2=,o=0,_c=8)	quadratic potential between specified atom types
 atom_type_inverse_power(t1=,t2=,i=0,_^=100,_c=8)	inverse power potential between specified atom types
-
-Use --print_atom_types to see all available atom types. Note that hydrogens
+```
+Use `--print_atom_types` to see all available atom types. Note that hydrogens
 are always ignored despite having atom types.
 
 Note that these are all symmetric - you do not need to specify a term for
 (t1,t2) and (t2,t1) (doing so will just double the value of the potential).
-
+```
 Example:  Faking covalent docking.  Consider this custom scoring function:
 -0.035579    gauss(o=0,_w=0.5,_c=8)
 -0.005156    gauss(o=3,_w=2,_c=8)
@@ -185,7 +186,7 @@ Example:  Faking covalent docking.  Consider this custom scoring function:
 -0.587439    non_dir_h_bond(g=-0.7,_b=0,_c=8)
 1.923        num_tors_div
 -100.0       atom_type_gaussian(t1=Chlorine,t2=Sulfur,o=0,_w=3,_c=8)
-
+```
 All but the last term are the default Vina scoring function.  That last
 term applys a very strong guassian potential between Cl and S.  In the
 system we were docking, we modified the two atoms we wanted to be next
