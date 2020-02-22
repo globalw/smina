@@ -7,9 +7,29 @@ This fork of smina includes a disclosed (FINALLY!) algorithm for global optimiza
 Eclipse IDE for C/C++ Developers Version: 2019-12 (4.14.0)
 Eclipse IDE for C/C++ Developers Version: Oxygen.3a Release (4.7.3a)
 
-It has been setup such that you can import the project as a existing project to workspace:
+It has been setup such that you can import the project as an existing project to workspace:
 
 ![Image of Import](../assets/import.png?raw=true)
+
+other versions of eclipse might also work fine. Everybody who is a commandline enthusiast can treat the project as a makefile-project as usual.
+
+## Performance
+
+Utilizing the gnm optimizer can enable researchers to calculate faster and better results of their respective protein-ligand docking problem on very few resources. That is based on the popular autodock vina/smina docking software.
+
+A comparison of computational speed and accuracy is exhibitable in the following:
+
+![Image of SpeednAcc](../assets/speedacc.png?raw=true)
+
+The image shows a comparisaon of computation time and computed energies of target human glyci-
+namide ribonucleotide synthetase (PDB: 2QK4, DUD-Database 2006) with Autodock
+Smina (red) and the stochastic global newton method (blue)
+
+The Receiver-Operator-Characteristic (ROC) of the calucations show that the computed energies are indeed resulting in more accurate Rankings of true binders as decoy compounds:
+
+![Image of ROCSMINA](../assets/roccomparegnm.png#thumbnail)
+
+![Image of ROCSMINA](../assets/roccomparesmina.png#thumbnail)
 
 
 smina which is a fork of Autodock Vina (http://vina.scripps.edu/) that 
