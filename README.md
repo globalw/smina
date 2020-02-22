@@ -5,6 +5,7 @@
 This fork of smina includes a disclosed (FINALLY!) algorithm for global optimization. So far the project is setup to be build and developed from source on IDEs:
 
 Eclipse IDE for C/C++ Developers Version: 2019-12 (4.14.0)
+
 Eclipse IDE for C/C++ Developers Version: Oxygen.3a Release (4.7.3a)
 
 The project has been setup such that you can import it as an existing project to workspace:
