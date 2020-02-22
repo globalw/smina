@@ -297,6 +297,8 @@ struct change {
 	}
 };
 
+
+
 struct conf {
 	std::vector<ligand_conf> ligands;
 	std::vector<residue_conf> flex;
@@ -403,6 +405,24 @@ private:
 		ar & ligands;
 		ar & flex;
 	}
+};
+
+struct div_conf
+{
+	conf xn;
+	conf xnp1;
+	change g;
+	fl bn;
+	fl bnp1;
+	int step;
+	div_conf(conf& _x, change& _g) : xn(_x), g(_g)
+	{
+	}
+	div_conf(conf& _xn, conf& _xnp1, change& _g, fl _bn, fl _bnp1, int _step) :
+		xn(_xn), xnp1(_xnp1), g(_g), bn(_bn), bnp1(_bnp1), step(_step)
+	{
+	}
+
 };
 
 struct output_type {

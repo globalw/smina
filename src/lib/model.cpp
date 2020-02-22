@@ -965,7 +965,8 @@ fl model::eval(const precalculate& p, const igrid& ig, const vec& v,
 
 	return e;
 }
-
+//TODO Hier müssen auch die intramolecularen Kräfte rein.
+//TODO !!!!!!!!!!!!!!Sonst Optimiert GNM das falsche!!!!!!!!!!!!!
 fl model::eval_deriv(const precalculate& p, const igrid& ig, const vec& v,
 		const conf& c, change& g, const grid& user_grid)
 { // clean up

@@ -56,3 +56,7 @@ void add_to_output_container(output_container& out, const output_type& t, fl min
 	}
 	out.sort();
 }
+
+void add_to_single_output_container(output_container& out, const output_type& t, fl min_rmsd, sz max_size) {
+	out.push_back(new output_type(t));
+}

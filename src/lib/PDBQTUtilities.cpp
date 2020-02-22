@@ -31,7 +31,6 @@
  ***********************************************************************/
 
 #include "PDBQTUtilities.h"
-#include <openbabel/elements.h>
 #include <cassert>
 #include <boost/unordered_map.hpp>
 #include <boost/unordered_set.hpp>
@@ -147,7 +146,7 @@ bool IsRotBond_PDBQT(OBBond * the_bond, unsigned desired_root)
 //and if both atoms it connects have at least one other atom bounded to them
 //will also allow bonds to the desired root to rotate
 {
-	if (!(the_bond->GetBondOrder() == 1) || the_bond->IsAmide() || the_bond->IsInRing())
+	if (!the_bond->IsSingle() || the_bond->IsAmide() || the_bond->IsInRing())
 	{
 		return false;
 	}
@@ -311,7 +310,7 @@ void createSDFContext(OBMol& mol, vector<OBAtom*> atoms, sdfcontext& sc)
 	for (unsigned i = 0, n = atoms.size(); i < n; i++)
 	{
 		OBAtom *atom = atoms[i];
-		const char *element_name = OBElements::GetSymbol(atom->GetAtomicNum());
+		const char *element_name = etab.GetSymbol(atom->GetAtomicNum());
 		sc.atoms.push_back(sdfcontext::sdfatom(element_name));
 
 		///check for special properties
@@ -351,7 +350,7 @@ static void OutputAtom(OBAtom* atom, context& lines, vector<OBAtom*>& atomorder,
 	stringstream ofs;
 
 	OBResidue *res;
-	strncpy(type_name, OBElements::GetSymbol(atom->GetAtomicNum()), sizeof(type_name));
+	strncpy(type_name, etab.GetSymbol(atom->GetAtomicNum()), sizeof(type_name));
 	type_name[sizeof(type_name) - 1] = '\0';
 	//two char. elements are on position 13 and 14 one char. start at 14
 
@@ -372,7 +371,7 @@ static void OutputAtom(OBAtom* atom, context& lines, vector<OBAtom*>& atomorder,
 		the_chain = res->GetChain();
 
 		//two char. elements are on position 13 and 14 one char. start at 14
-		if (strlen(OBElements::GetSymbol(atom->GetAtomicNum())) == 1)
+		if (strlen(etab.GetSymbol(atom->GetAtomicNum())) == 1)
 		{
 			if (strlen(type_name) < 4)
 			{
@@ -398,31 +397,31 @@ static void OutputAtom(OBAtom* atom, context& lines, vector<OBAtom*>& atomorder,
 		res_num = 1;
 	}
 
-	element_name = OBElements::GetSymbol(atom->GetAtomicNum());
+	element_name = etab.GetSymbol(atom->GetAtomicNum());
 	char element_name_final[3];
 	element_name_final[2] = '\0';
 
-	if (atom->GetAtomicNum() == 1)
+	if (atom->IsHydrogen())
 	{
 		element_name_final[0] = 'H';
 		element_name_final[1] = 'D';
 	}
-	else if ((atom->GetAtomicNum() == 6) && (atom->IsAromatic()))
+	else if ((atom->IsCarbon()) && (atom->IsAromatic()))
 	{
 		element_name_final[0] = 'A';
 		element_name_final[1] = '\0';
 	}
-	else if (atom->GetAtomicNum() == 8)
+	else if (atom->IsOxygen())
 	{
 		element_name_final[0] = 'O';
 		element_name_final[1] = 'A';
 	}
-	else if ((atom->GetAtomicNum() == 7) && (atom->IsHbondAcceptor()))
+	else if ((atom->IsNitrogen()) && (atom->IsHbondAcceptor()))
 	{
 		element_name_final[0] = 'N';
 		element_name_final[1] = 'A';
 	}
-	else if ((atom->GetAtomicNum() == 16) && (atom->IsHbondAcceptor()))
+	else if ((atom->IsSulfur()) && (atom->IsHbondAcceptor()))
 	{
 		element_name_final[0] = 'S';
 		element_name_final[1] = 'A';

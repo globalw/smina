@@ -168,8 +168,10 @@ private:
 		const F* f;
 		Container* v;
 		aux(const F* f) : f(f), v(NULL) {}
-		void operator()(sz i) const { 
+		void operator()(sz i) const {
+			// check if v is initialized and kick out if not.
 			VINA_CHECK(v);
+			// v is parallel_mc_task
 			(*f)((*v)[i]); 
 		}
 	};

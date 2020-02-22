@@ -144,12 +144,20 @@ void cache::populate(const model& m, const precalculate& p,
 	szv_grid_cache igcache(m, cutoff_sqr);
 	szv_grid ig(igcache, gd);
 
+	// TODO remove std::cout
+	std::cout << "preparing cache ... \n";
+
 	VINA_FOR(x, g.data.dim0())
 	{
+		// TODO remove std::cout
+		if(display_progress)
+			//std::cout << "preparing cache  " << x << "\n";
+
 		VINA_FOR(y, g.data.dim1())
 		{
 			VINA_FOR(z, g.data.dim2())
 			{
+
 				std::fill(affinities.begin(), affinities.end(), 0);
 				std::fill(chargeaffinities.begin(), chargeaffinities.end(), 0);
 				vec probe_coords;

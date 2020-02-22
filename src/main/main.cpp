@@ -69,12 +69,13 @@ struct user_settings
 	bool local_only;
 	bool dominimize;
 	bool include_atom_info;
+	bool dognm;
 
 	//reasonable defaults
 	user_settings(): energy_range(2.0), num_modes(9), out_min_rmsd(1),
 			forcecap(1000),seed(auto_seed()),verbosity(1), cpu(1), exhaustiveness(10),
 			score_only(false), randomize_only(false), local_only(false),
-			dominimize(false), include_atom_info(false)
+			dominimize(false), include_atom_info(false), dognm(false)
 	{
 
 	}
@@ -297,8 +298,87 @@ void do_search(model& m, const boost::optional<model>& ref,
 		if (compute_atominfo)
 			results.back().setAtomValues(m, &sf);
 	}
+	else if (settings.dognm)
+	{
+		// here we perform a Stochastic BFGS...
+		rng generator(static_cast<rng::result_type>(settings.seed));
+		log << "Using random seed: " << settings.seed;
+		log.endl();
+		output_container out_cont;
+		doing(settings.verbosity, "Performing global deterministic search", log);
+		par(m, out_cont, prec, ig, corner1, corner2, generator, user_grid);
+		done(settings.verbosity, log);
+		doing(settings.verbosity, "Refining results", log);
+		VINA_FOR_IN(i, out_cont)
+			refine_structure(m, prec, nc, out_cont[i], authentic_v,
+					par.mc.ssd_par.minparm, user_grid);
+		if (!out_cont.empty())
+		{
+			out_cont.sort();
+			const fl best_mode_intramolecular_energy = m.eval_intramolecular(
+					prec, authentic_v, out_cont[0].c);
+
+			VINA_FOR_IN(i, out_cont)
+				if (not_max(out_cont[i].e))
+					out_cont[i].e = m.eval_adjusted(sf, prec, nc, authentic_v,
+							out_cont[i].c, best_mode_intramolecular_energy,
+							user_grid);
+			// the order must not change because of non-decreasing g (see paper), but we'll re-sort in case g is non strictly increasing
+			out_cont.sort();
+		}
+
+		out_cont = remove_redundant(out_cont, settings.out_min_rmsd);
+
+		done(settings.verbosity, log);
+
+		log.setf(std::ios::fixed, std::ios::floatfield);
+		log.setf(std::ios::showpoint);
+		log << '\n';
+		log << "mode |   affinity | dist from best mode\n";
+		log << "     | (kcal/mol) | rmsd l.b.| rmsd u.b.\n";
+		log << "-----+------------+----------+----------\n";
+
+		model best_mode_model = m;
+		if (!out_cont.empty())
+			best_mode_model.set(out_cont.front().c);
+
+		sz how_many = 0;
+		VINA_FOR_IN(i, out_cont)
+		{
+			if (how_many >= settings.num_modes || !not_max(out_cont[i].e)
+					|| out_cont[i].e > out_cont[0].e + settings.energy_range)
+				break; // check energy_range sanity FIXME
+			++how_many;
+			log << std::setw(4) << i + 1 << "    " << std::setw(9)
+					<< std::setprecision(1) << out_cont[i].e; // intermolecular_energies[i];
+			m.set(out_cont[i].c);
+			const model& r = ref ? ref.get() : best_mode_model;
+			const fl lb = m.rmsd_lower_bound(r);
+			const fl ub = m.rmsd_upper_bound(r);
+			log << "  " << std::setw(9) << std::setprecision(3) << lb << "  "
+					<< std::setw(9) << std::setprecision(3) << ub; // FIXME need user-readable error messages in case of failures
+
+			log.endl();
+
+			//dkoes - setup result_info
+			results.push_back(result_info(out_cont[i].e, -1, m));
+			if (compute_atominfo)
+				results.back().setAtomValues(m, &sf);
+
+		}
+		done(settings.verbosity, log);
+
+		if (how_many < 1)
+		{
+			log
+					<< "WARNING: Could not find any conformations completely within the search space.\n"
+					<< "WARNING: Check that it is large enough for all movable atoms, including those in the flexible side chains.";
+			log.endl();
+		}
+	}
 	else
 	{
+		// here we perform a Stochastic BFGS...
 		rng generator(static_cast<rng::result_type>(settings.seed));
 		log << "Using random seed: " << settings.seed;
 		log.endl();
@@ -345,7 +425,7 @@ void do_search(model& m, const boost::optional<model>& ref,
 		{
 			if (how_many >= settings.num_modes || !not_max(out_cont[i].e)
 					|| out_cont[i].e > out_cont[0].e + settings.energy_range)
-				break; // check energy_range sanity FIXME
+				//break; // check energy_range sanity FIXME
 			++how_many;
 			log << std::setw(4) << i + 1 << "    " << std::setw(9)
 					<< std::setprecision(1) << out_cont[i].e; // intermolecular_energies[i];
@@ -421,7 +501,7 @@ void main_procedure(model& m, precalculate& prec,
 		minparm.maxiters = par.mc.ssd_par.evals;
 	par.mc.ssd_par.minparm = minparm;
 	par.mc.min_rmsd = 1.0;
-	par.mc.num_saved_mins = settings.num_modes > 20 ? settings.num_modes : 20; //dkoes, support more than 20
+	par.mc.num_saved_mins = settings.num_modes > 40000 ? settings.num_modes : 40000; //dkoes, support more than 20
 	par.mc.hunt_cap = vec(10, 10, 10);
 	par.num_tasks = settings.exhaustiveness;
 	par.num_threads = settings.cpu;
@@ -860,14 +940,14 @@ Please report this error at http://smina.sf.net\n"
 Thank you!\n";
 
 	const std::string cite_message =
-			"   _______  _______ _________ _        _______ \n"
-					"  (  ____ \\(       )\\__   __/( (    /|(  ___  )\n"
-					"  | (    \\/| () () |   ) (   |  \\  ( || (   ) |\n"
-					"  | (_____ | || || |   | |   |   \\ | || (___) |\n"
-					"  (_____  )| |(_)| |   | |   | (\\ \\) ||  ___  |\n"
-					"        ) || |   | |   | |   | | \\   || (   ) |\n"
-					"  /\\____) || )   ( |___) (___| )  \\  || )   ( |\n"
-					"  \\_______)|/     \\|\\_______/|/    )_)|/     \\|\n"
+					 "   _______  __     _  _______\n"
+					 "  (  ____ \\(  \\   / |(       )\n"
+					 "  | (    \\||   \\  | || () () |\n"
+					 "  | |  ___ | (\\ \\ | || || || | \n"
+					 "  | | (_  )| | \\ \\| || |(_)| | \n"
+					 "  | |   ) || |  \\   || |   | | \n"
+					 "  | |___) || )   \\  || )   ( | \n"
+					 "  \(_______)|/     \\_||/     \\| \n"
 					"\n\nsmina is based off AutoDock Vina. Please cite appropriately.\n";
 
 	try
@@ -978,6 +1058,8 @@ Thank you!\n";
 				"number iterations of steepest descent; default scales with rotors and usually isn't sufficient for convergence")
 		("accurate_line", bool_switch(&accurate_line),
 				"use accurate line search")
+		("gnm", bool_switch(&settings.dognm)->default_value(false),
+				"Enable the global newton method. Default is false")
 		("minimize_early_term", bool_switch(&minparms.early_term),
 				"Stop minimization before convergence conditions are fully met.")
 		("approximation", value<ApproxType>(&approx),
@@ -1114,7 +1196,7 @@ Thank you!\n";
 				settings.forcecap = 10; //nice and soft
 			if (minparms.maxiters == 0)
 				minparms.maxiters = 10000; //will presumably converge
-			settings.local_only = true;
+			//settings.local_only = false; // FIXME (wb - has all ready a default value)
 			minparms.type = minimization_params::BFGSAccurateLineSearch;
 
 			if (!vm.count("approximation"))
@@ -1216,7 +1298,7 @@ Thank you!\n";
 		grid_dims gd; // n's = 0 via default c'tor
 		grid_dims user_gd;
 		grid user_grid;
-
+		// TODO - wb evaluate the possebility of optimizing the weights
 		flv weights;
 
 		//dkoes, set the scoring function
@@ -1261,7 +1343,7 @@ Thank you!\n";
 			setup_user_gd(user_gd, user_in);
 			user_grid.init(user_gd, user_in, ug_scaling_factor); //initialize user grid
 		}
-
+		// TODO - wb vielleicht die Granularität des Gitters erhöhen?
 		const fl granularity = 0.375;
 		if (search_box_needed)
 		{
@@ -1318,9 +1400,10 @@ Thank you!\n";
 			prec = boost::shared_ptr<precalculate>(
 					new precalculate_linear(wt, approx_factor));
 		else if (approx == Exact)
-			prec = boost::shared_ptr<precalculate>(
-					new precalculate_exact(wt));
-
+			prec = boost::shared_ptr<precalculate>(// baut einen shared pointer aus der boost bibliothek.
+					new precalculate_exact(wt));	// Das Object wird gelöscht wenn der Pointer
+													// gelöscht wird. Voll Toll... das Object beinhalted vorberechnete
+													// Angaben zur Diskretisierung sowie die gewichte der Zielfunktion
 		//setup single outfile
 		using namespace OpenBabel;
 		ozfile outfile;
@@ -1366,11 +1449,11 @@ Thank you!\n";
 			model m;
 			while (no_lig || mols.readMoleculeIntoModel(m))
 			{
-			  if(no_lig)
-			  {
-			    no_lig = false; //only go through loop once
-			    m = initm;
-			  }
+				if(no_lig)
+				{
+					no_lig = false; //only go through loop once
+					m = initm;
+				}
 				if (settings.local_only)
 				{
 					//dkoes - for convenience get box from model

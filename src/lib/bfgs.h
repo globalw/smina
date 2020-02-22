@@ -50,6 +50,15 @@ inline fl scalar_product(const Change& a, const Change& b, sz n)
 }
 
 template<typename Change>
+inline fl vector_norm(const Change& a, sz n)
+{
+	fl tmp = 0;
+	VINA_FOR(i, n)
+		tmp += a(i) * a(i);
+	return sqrt(tmp);
+}
+
+template<typename Change>
 inline bool bfgs_update(flmat& h, const Change& p, const Change& y,
 		const fl alpha)
 {
@@ -197,87 +206,124 @@ void subtract_change(Change& b, const Change& a, sz n)
 		b(i) -= a(i);
 }
 
+template<typename Change>
+inline void vector_multiply(Change& out, const Change& a, fl b, sz n)
+{
+	VINA_FOR(i, n)
+		out(i) = a(i)*b;
+}
+
+template<typename Conf>
+inline fl config_dist(const Conf& a, const Conf& b, sz n)
+{
+	fl res = 0.0;
+	VINA_FOR(i, n)
+		res += fabs(a(i)-b(i));
+}
+
 template<typename F, typename Conf, typename Change>
 fl bfgs(F& f, Conf& x, Change& g, const fl average_required_improvement,
 		const minimization_params& params)
-{ // x is I/O, final value is returned
+{
 	sz n = g.num_floats();
-	flmat h(n, 0);
-	set_diagonal(h, 1);
 
-	Change g_new(g);
+	Change g_rand(g);
 	Conf x_new(x);
 	fl f0 = f(x, g);
+
+	Conf x_best(x);
+	fl fbest = f(x, g);
 
 	fl f_orig = f0;
 	Change g_orig(g);
 	Conf x_orig(x);
+	Change s(g);
+	s.invert();
 
-	Change p(g);
+	fl fb = f(x, g);
+	fl bn = 10;
+	fl bnp1 = -20;
+	fl tmp = 0;
+	fl scale = 0;
 
-//	std::ofstream fout("minout.sdf");
+	g_rand = g;
+	fl randgradnorm = vector_norm(g,n);
+
+	int allstep = 0;
 	VINA_U_FOR(step, params.maxiters)
 	{
-		minus_mat_vec_product(h, g, p);
-		fl f1 = 0;
-		fl alpha;
 
-//		f.m->set(x);
-//		f.m->write_sdf(fout);
-//		fout << "$$$$\n";
+		fl res;
+		fb = f(x_new, g);
+		fl gradnorm = vector_norm(g,n);
 
-		if (params.type == minimization_params::BFGSAccurateLineSearch)
-			alpha = accurate_line_search(f, n, x, g, f0, p, x_new, g_new, f1);
-		else
-			alpha = fast_line_search(f, n, x, g, f0, p, x_new, g_new, f1);
+		if( unsigned( step % 10 ) == 0) // @suppress("Symbol is not resolved")
+		{
+			g_rand = g;
+			randgradnorm = vector_norm(g,n);
 
-		if(alpha == 0)
-			break; //line direction was wrong, give up
+		}
 
-		Change y(g_new);
-		subtract_change(y, g, n);
-
-		fl prevf0 = f0;
-		f0 = f1;
 		x = x_new;
 
-		if (params.early_term)
+		fl strech = (bnp1 - fb)/(gradnorm*gradnorm);
+
+		if(strech >= 100)
 		{
-			//dkoes - use the progress in reducing the function value as an indication of when to stop
-			fl diff = prevf0 - f0;
-			if (fabs(diff) < 1e-5) //arbitrary cutoff
-			{
-				break;
-			}
+			strech = 0.1*(bnp1 - fb)/(gradnorm*gradnorm);
 		}
 
-		g = g_new; // dkoes - check the convergence of the new gradient
+		x_new.increment(g, strech);
+		allstep += 1;
 
-		fl gradnormsq = scalar_product(g, g, n);
-//std::cout << "step " << step << " " << f0 << " " << gradnormsq << " " << alpha << "\n";
-
-		if (!(gradnormsq >= 1e-4)) //slightly arbitrary cutoff - works with fp
+		res = config_dist(x, x_new, n);
+		if(res < 1e-8)
 		{
-			break; // breaks for nans too // FIXME !!??
+			x_orig = x_new;
+			x = x_new;
+			tmp = bnp1;
+			//std::cout << "convergent -- bnp1: " << bnp1 << "\n";
+			bnp1 = bnp1 - fabs(bnp1 - bn) / 2.0;
+			bn = tmp;
+			step = 0; // @suppress("Symbol is not resolved")
 		}
 
-		if (step == 0)
-		{
-			const fl yy = scalar_product(y, y, n);
-			if (std::abs(yy) > epsilon_fl)
-				set_diagonal(h, alpha * scalar_product(y, p, n) / yy);
+		if(step == params.maxiters - 1){ // @suppress("Symbol is not resolved")
+			x = x_orig;
+			x_new = x;
+			tmp = bnp1;
+			//std::cout << "divergent -- bnp1: " << bnp1 << "\n";
+			bnp1 = bnp1 + fabs(bnp1 - bn) / 2.0;
+			bn = tmp;
+			step = 0; // @suppress("Symbol is not resolved")
 		}
 
-		bool h_updated = bfgs_update(h, p, y, alpha);
+		if( fb < fbest ){
+			fbest = fb; // slight modification of original gnm
+			x_best = x;
+			x_orig = x;
+			//std::cout << "actual found value: " << fbest << "\n";
+			fb = f(x_new, g);
+		}
+
+		if (fabs(bn-bnp1)<1e-3)
+		{
+
+			x = x_best;
+			fb = f(x, g);
+			step = params.maxiters; // @suppress("Symbol is not resolved")
+			break;
+		}
+
+		if( unsigned(step % 8000) == 1){ // @suppress("Symbol is not resolved")
+
+			//x_new.increment(g_rand, 100.0/randgradnorm);
+
+		}
 	}
-
-	if (!(f0 <= f_orig))
-	{ // succeeds for nans too
-		f0 = f_orig;
-		x = x_orig;
-		g = g_orig;
-	}
-	return f0;
+	// TODO remove std::cout
+	std::cout << "NUMBER OF ITERATIONS COMBINED: " << allstep << " at E = " << fb << "\n";
+	return fb;
 }
 
 //set g = g_new + B*g

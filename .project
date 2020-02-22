@@ -3,6 +3,7 @@
 	<name>smina</name>
 	<comment></comment>
 	<projects>
+		<project>smina</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -86,4 +87,27 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 		<nature>org.python.pydev.pythonNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>lib</name>
+			<type>2</type>
+			<location>/home/pluto/Tools/openbabel-install/lib</location>
+		</link>
+		<link>
+			<name>openbabel</name>
+			<type>2</type>
+			<location>/home/pluto/Tools/openbabel-install/include/openbabel-2.0/openbabel</location>
+		</link>
+		<link>
+			<name>openbabel-2.0</name>
+			<type>2</type>
+			<location>/home/pluto/Tools/openbabel-install/include/openbabel-2.0</location>
+		</link>
+	</linkedResources>
+	<variableList>
+		<variable>
+			<name>locallib</name>
+			<value>file:/home/pluto/Documents/smina_base/src/lib</value>
+		</variable>
+	</variableList>
 </projectDescription>

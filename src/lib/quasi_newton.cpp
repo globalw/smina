@@ -34,11 +34,17 @@ struct quasi_newton_aux {
 		const fl tmp = m->eval_deriv(*p, *ig, v, c, g, *user_grid);
 		return tmp;
 	}
+
+	fl operator()(const conf& c, change& g, const fl new_param) {
+		const fl tmp = m->eval_deriv(*p, *ig, v, c, g, *user_grid)*new_param;
+		return tmp;
+	}
 };
 
 void quasi_newton::operator()(model& m, const precalculate& p, const igrid& ig, output_type& out, change& g, const vec& v, const grid& user_grid) const { // g must have correct size
 	quasi_newton_aux aux(&m, &p, &ig, v, &user_grid);
 	fl res = bfgs(aux, out.c, g, average_required_improvement, params);
+	//fl res = conjugate(aux, out.c, g, average_required_improvement, params);	
 	out.e = res;
 }
 

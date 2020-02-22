@@ -84,6 +84,70 @@ output_type monte_carlo::many_runs(model& m, const precalculate& p, const igrid&
 
 // out is sorted
 void monte_carlo::operator()(model& m, output_container& out, const precalculate& p, const igrid& ig, const vec& corner1, const vec& corner2, incrementable* increment_me, rng& generator, grid& user_grid) const {
+
+	vec authentic_v(1000, 1000, 1000); // FIXME? this is here to avoid max_fl/max_fl
+	conf_size s = m.get_size();
+	change g(s);
+	output_type tmp(s, 0);
+	tmp.c.randomize(corner1, corner2, generator);
+	fl best_e = max_fl;
+	minimization_params minparms = ssd_par.minparm;
+	if(minparms.maxiters == 0)
+		minparms.maxiters = ssd_par.evals;
+	quasi_newton quasi_newton_par(minparms);
+	VINA_U_FOR(step, 1) {
+		if(increment_me)
+			++(*increment_me);
+		output_type candidate = tmp;
+		//candidate.c.randomize(corner1, corner2, generator);
+		mutate_conf(candidate.c, m, 200.0, generator);
+		// TODO : execute only one time on whole grid!
+		quasi_newton_par(m, p, ig, candidate, g, hunt_cap, user_grid);
+		if(step == 0 || metropolis_accept(tmp.e, candidate.e, temperature, generator)) { // @suppress("Symbol is not resolved")
+
+			tmp = candidate;
+
+			m.set(tmp.c);
+
+			if(tmp.e < best_e || out.size() < num_saved_mins) {
+				tmp.coords = m.get_heavy_atom_movable_coords();
+				add_to_output_container(out, tmp, min_rmsd, num_saved_mins); // 20 - max size
+				if(tmp.e < best_e)
+					best_e = tmp.e;
+			}
+		}
+	}
+	VINA_CHECK(!out.empty());
+	VINA_CHECK(out.front().e <= out.back().e); // make sure the sorting worked in the correct order
+
+	/*
+	vec authentic_v(1000, 1000, 1000); // FIXME? this is here to avoid max_fl/max_fl
+	conf_size s = m.get_size();
+	change g(s);
+	output_type tmp(s, 0);
+	tmp.c.randomize(corner1, corner2, generator);
+	fl best_e = max_fl;
+	minimization_params minparms = ssd_par.minparm;
+	if(minparms.maxiters == 0)
+		minparms.maxiters = ssd_par.evals;
+
+	quasi_newton quasi_newton_par(minparms);
+	output_type candidate = tmp;
+	mutate_conf(candidate.c, m, mutation_amplitude, generator);
+
+	quasi_newton_par(m, p, ig, candidate, g, hunt_cap, user_grid);
+	tmp = candidate;
+
+	m.set(tmp.c);
+	tmp.coords = m.get_heavy_atom_movable_coords();
+	//add_to_output_container(out, tmp, min_rmsd, num_saved_mins); // 20 - max size
+	add_to_single_output_container(out, tmp, min_rmsd, num_saved_mins);
+
+	VINA_CHECK(!out.empty());
+	VINA_CHECK(out.front().e <= out.back().e); // make sure the sorting worked in the correct order
+	*/
+	 //original code by smina
+	/*
 	vec authentic_v(1000, 1000, 1000); // FIXME? this is here to avoid max_fl/max_fl
 	conf_size s = m.get_size();
 	change g(s);
@@ -99,6 +163,7 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
 			++(*increment_me);
 		output_type candidate = tmp;
 		mutate_conf(candidate.c, m, mutation_amplitude, generator);
+		// TODO : execute only one time on whole grid!
 		quasi_newton_par(m, p, ig, candidate, g, hunt_cap, user_grid);
 		if(step == 0 || metropolis_accept(tmp.e, candidate.e, temperature, generator)) {
 			tmp = candidate;
@@ -118,4 +183,5 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
 	}
 	VINA_CHECK(!out.empty());
 	VINA_CHECK(out.front().e <= out.back().e); // make sure the sorting worked in the correct order
+	*/
 }

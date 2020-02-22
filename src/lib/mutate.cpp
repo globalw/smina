@@ -50,14 +50,20 @@ void mutate_conf(conf& c, const model& m, fl amplitude, rng& generator) { // ONE
 				rotation = amplitude / gr * random_inside_sphere(generator); 
 				quaternion_increment(c.ligands[i].rigid.orientation, rotation);
 			}
-			return; 
+			return;
 		}
 		--which;
-		if(which < c.ligands[i].torsions.size()) { c.ligands[i].torsions[which] = random_fl(-pi, pi, generator); return; }
+		if(which < c.ligands[i].torsions.size()) {
+			c.ligands[i].torsions[which] = random_fl(-pi, pi, generator);
+			return;
+		}
 		which -= c.ligands[i].torsions.size();
 	}
 	VINA_FOR_IN(i, c.flex) {
-		if(which < c.flex[i].torsions.size()) { c.flex[i].torsions[which] = random_fl(-pi, pi, generator); return; }
+		if(which < c.flex[i].torsions.size()) {
+			c.flex[i].torsions[which] = random_fl(-pi, pi, generator);
+			return;
+		}
 		which -= c.flex[i].torsions.size();
 	}
 }

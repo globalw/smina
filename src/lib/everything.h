@@ -66,7 +66,7 @@ struct electrostatic: public charge_dependent
 {
 	fl cap;
 
-	electrostatic(fl cap_=100, fl cutoff_=8) :
+	electrostatic(fl cap_=100, fl cutoff_=200) :
 			charge_dependent(cutoff_), cap(cap_)
 	{
 		name = std::string("electrostatic(i=") + to_string(power) + ",_^="
@@ -108,7 +108,7 @@ struct ad4_solvation: public charge_dependent
 {
 	fl solvation_q;
 	fl desolvation_sigma;
-	ad4_solvation(fl desolvation_sigma_=3.6, fl solvation_q_=0.01097, fl cutoff_=8) :
+	ad4_solvation(fl desolvation_sigma_=3.6, fl solvation_q_=0.01097, fl cutoff_=200) :
 				charge_dependent(cutoff_), solvation_q(solvation_q_),
 				desolvation_sigma(desolvation_sigma_)
 	{
@@ -162,7 +162,7 @@ struct gauss: public charge_independent
 {
 	fl offset; // added to optimal distance
 	fl width;
-	gauss(fl offset_=0, fl width_=0.5, fl cutoff_=8) :
+	gauss(fl offset_=0, fl width_=0.5, fl cutoff_=200) :
 		charge_independent(cutoff_), offset(offset_), width(width_)
 	{
 		name = std::string("gauss(o=") + to_string(offset) + ",_w="
@@ -190,7 +190,7 @@ struct gauss: public charge_independent
 struct repulsion: public charge_independent
 {
 	fl offset; // added to vdw
-	repulsion(fl offset_=0, fl cutoff_=8) :
+	repulsion(fl offset_=0, fl cutoff_=200) :
 		charge_independent(cutoff_), offset(offset_)
 	{
 		name = std::string("repulsion(o=") + to_string(offset) + ",_c="
@@ -240,7 +240,7 @@ struct hydrophobic: public charge_independent
 {
 	fl good;
 	fl bad;
-	hydrophobic(fl good_=0.5, fl bad_=1.5, fl cutoff_=8) :
+	hydrophobic(fl good_=0.5, fl bad_=1.5, fl cutoff_=200) :
 		charge_independent(cutoff_), good(good_), bad(bad_)
 	{
 		name = "hydrophobic(g=" + to_string(good) + ",_b=" + to_string(bad)
@@ -271,7 +271,7 @@ struct non_hydrophobic: public charge_independent
 {
 	fl good;
 	fl bad;
-	non_hydrophobic(fl good_=0.5, fl bad_=1.5, fl cutoff_=8) :
+	non_hydrophobic(fl good_=0.5, fl bad_=1.5, fl cutoff_=200) :
 		charge_independent(cutoff_), good(good_), bad(bad_)
 	{
 		name = "non_hydrophobic(g=" + to_string(good) + ",_b=" + to_string(bad)
@@ -312,7 +312,7 @@ struct vdw: public charge_independent
 {
 	fl smoothing;
 	fl cap;
-	vdw(fl smoothing_=1, fl cap_=100, fl cutoff_=8)
+	vdw(fl smoothing_=1, fl cap_=100, fl cutoff_=200)
 	:
 		charge_independent(cutoff_), smoothing(smoothing_), cap(cap_)
 	{
@@ -368,7 +368,7 @@ struct non_dir_h_bond_lj: public charge_independent
 {
 	fl offset;
 	fl cap;
-	non_dir_h_bond_lj(fl offset_=-0.7, fl cap_=100, fl cutoff_=8) :
+	non_dir_h_bond_lj(fl offset_=-0.7, fl cap_=100, fl cutoff_=200) :
 		charge_independent(cutoff_), offset(offset_), cap(cap_)
 	{
 		name = std::string("non_dir_h_bond_lj(o=") + to_string(offset)
@@ -412,7 +412,7 @@ struct non_dir_h_bond_lj: public charge_independent
 struct non_dir_anti_h_bond_quadratic: public charge_independent
 {
 	fl offset;
-	non_dir_anti_h_bond_quadratic(fl offset_=0, fl cutoff_=8) :
+	non_dir_anti_h_bond_quadratic(fl offset_=0, fl cutoff_=200) :
 		charge_independent(cutoff_), offset(offset_)
 	{
 		name = std::string("non_dir_anti_h_bond_quadratic(o=") + to_string(offset)
@@ -446,7 +446,7 @@ struct non_dir_anti_h_bond_quadratic: public charge_independent
 struct donor_donor_quadratic: public charge_independent
 {
 	fl offset;
-	donor_donor_quadratic(fl offset_=0, fl cutoff_=8) :
+	donor_donor_quadratic(fl offset_=0, fl cutoff_=200) :
 		charge_independent(cutoff_), offset(offset_)
 	{
 		name = std::string("donor_donor_quadratic(o=") + to_string(offset)
@@ -480,7 +480,7 @@ struct donor_donor_quadratic: public charge_independent
 struct acceptor_acceptor_quadratic: public charge_independent
 {
 	fl offset;
-	acceptor_acceptor_quadratic(fl offset_=0, fl cutoff_=8) :
+	acceptor_acceptor_quadratic(fl offset_=0, fl cutoff_=200) :
 		charge_independent(cutoff_), offset(offset_)
 	{
 		name = std::string("acceptor_acceptor_quadratic(o=") + to_string(offset)
@@ -514,7 +514,7 @@ struct non_dir_h_bond: public charge_independent
 {
 	fl good;
 	fl bad;
-	non_dir_h_bond(fl good_=-0.7, fl bad_=0, fl cutoff_=8) :
+	non_dir_h_bond(fl good_=-0.7, fl bad_=0, fl cutoff_=200) :
 		charge_independent(cutoff_), good(good_), bad(bad_)
 	{
 		name = std::string("non_dir_h_bond(g=") + to_string(good) + ",_b="
@@ -550,7 +550,7 @@ struct atom_type_base: public charge_independent
 	std::string name1, name2;
 	smt t1, t2; //atom type pair
 
-	atom_type_base(const std::string& n1, const std::string& n2,  fl cutoff_=8) :
+	atom_type_base(const std::string& n1, const std::string& n2,  fl cutoff_=200) :
 		charge_independent(cutoff_), name1(n1), name2(n2),
 		t1(string_to_smina_type(n1)), t2(string_to_smina_type(n2))
 	{
@@ -574,7 +574,7 @@ template<unsigned power>
 struct atom_type_inverse_power: public atom_type_base
 {
 	fl cap;
-	atom_type_inverse_power(const std::string& n1="", const std::string& n2="", fl cap_=100, fl cutoff_=8) :
+	atom_type_inverse_power(const std::string& n1="", const std::string& n2="", fl cap_=100, fl cutoff_=200) :
 		atom_type_base(n1, n2, cutoff_), cap(cap_)
 	{
 		name = std::string("atom_type_inverse_power(t1=")+name1+",t2="+name2+",i="
@@ -620,7 +620,7 @@ struct atom_type_inverse_power: public atom_type_base
 struct atom_type_gaussian: public atom_type_base
 {
 	fl width, offset;
-	atom_type_gaussian(const std::string& n1="", const std::string& n2="", fl o=0, fl w=0, fl cutoff_=8) :
+	atom_type_gaussian(const std::string& n1="", const std::string& n2="", fl o=0, fl w=0, fl cutoff_=200) :
 		atom_type_base(n1, n2, cutoff_), width(w), offset(o)
 	{
 		name = std::string("atom_type_gaussian(t1="+name1+",t2="+name2+",o=")
@@ -654,7 +654,7 @@ struct atom_type_gaussian: public atom_type_base
 struct atom_type_linear: public atom_type_base
 {
 	fl good, bad;
-	atom_type_linear(const std::string& n1="", const std::string& n2="", fl good_=0, fl bad_=0, fl cutoff_=8) :
+	atom_type_linear(const std::string& n1="", const std::string& n2="", fl good_=0, fl bad_=0, fl cutoff_=200) :
 		atom_type_base(n1, n2, cutoff_), good(good_), bad(bad_)
 	{
 		name = std::string("atom_type_linear(t1="+name1+",t2="+name2+",g=")
@@ -688,7 +688,7 @@ struct atom_type_linear: public atom_type_base
 struct atom_type_quadratic: public atom_type_base
 {
 	fl offset;
-	atom_type_quadratic(const std::string& n1="", const std::string& n2="", fl offset_=0, fl cutoff_=8) :
+	atom_type_quadratic(const std::string& n1="", const std::string& n2="", fl offset_=0, fl cutoff_=200) :
 		atom_type_base(n1,n2, cutoff_),	offset(offset_)
 	{
 		name = std::string("atom_type_quadratic(t1="+name1+",t2="+name2+",o=") + to_string(offset)

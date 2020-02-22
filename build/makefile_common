@@ -6,8 +6,8 @@ TOSMINAOBJ = tosmina.o CommandLine.o
 FROMSMINAOBJ = fromsmina.o CommandLine.o 
 SERVEROBJ = server.o CommandLine.o MinimizationQuery.o QueryManager.o
 INCFLAGS = -I $(BOOST_INCLUDE) -I $(OPENBABEL_INCLUDE) 
-
-CC = ${GPP} ${C_PLATFORM} -ansi  ${C_OPTIONS} $(INCFLAGS)
+LDFLAGS = -lopenbabel -L /home/pluto/Tools/openbabel-install/lib
+CC = ${GPP} -std=c++11 ${C_PLATFORM} -ansi  ${C_OPTIONS} $(INCFLAGS)
 
 LDFLAGS :=  $(LDFLAGS)
 
