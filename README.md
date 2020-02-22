@@ -25,7 +25,7 @@ A comparison of computational speed and accuracy is exhibitable in the following
 
 The image shows a comparisaon of computation time and computed energies of target human glyci-
 namide ribonucleotide synthetase (PDB: 2QK4, [DUD-Database 2006](http://dud.docking.org/r2/)) with Autodock
-Smina (red) and the global newton method (blue)
+Smina (red) and the projected global newton method (blue)
 
 The Receiver-Operator-Characteristic (ROC) of the calucations shows that the computed energies are indeed resulting in more accurate Rankings of true binders as decoy compounds:
 
@@ -33,6 +33,8 @@ The Receiver-Operator-Characteristic (ROC) of the calucations shows that the com
 
 ![Image of ROCSMINA](../assets/roccompare.png?raw=true)
 
+Computaion of Protein-Ligand-Docking problem and evaluation of the Receiver-Operation-Characteristic of PDB: 2QK4, [DUD-Database 2006](http://dud.docking.org/r2/)) Left: Using Autodock Smina form Results shown in the Performance-Section
+ (red) Right: Using the projected global newton method (blue).
 
 # Reference
 
