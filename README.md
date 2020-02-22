@@ -1,6 +1,6 @@
 # GNM UPDATE
 
-##Setup - Source Development
+## Setup - Source Development
 
 This fork of smina includes a disclosed (FINALLY!) algorithm for global optimization. So far the project is setup to be build and developed from source on IDEs:
 
