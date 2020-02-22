@@ -26,7 +26,7 @@ Pre-built binaries are provided that were built on Ubuntu 14.04.  The main
 dependencies are boost (1.54) and openbabel.  A static binary is provided
 in case these dependencies cannot be met (however, it probably still will
 not work if the kernel is older than 2.6.24).
-
+```
 Input:
   -r [ --receptor ] arg rigid part of the receptor (PDBQT)
   --flex arg            flexible side chains, if any (PDBQT)
@@ -108,7 +108,7 @@ Information (optional):
   --help_hidden         display usage summary with hidden options
   --version             display program version
 
-
+```
 
 
 
