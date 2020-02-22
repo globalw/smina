@@ -1,4 +1,18 @@
-gnm is a fork of smina which is a fork of Autodock Vina (http://vina.scripps.edu/) that 
+# GNM UPDATE
+
+##Setup - Source Development
+
+This fork of smina includes a disclosed (FINALLY!) algorithm for global optimization. So far the project is setup to be build and developed from source on IDEs:
+
+Eclipse IDE for C/C++ Developers Version: 2019-12 (4.14.0)
+Eclipse IDE for C/C++ Developers Version: Oxygen.3a Release (4.7.3a)
+
+It has been setup such that you can import the project as a existing project to workspace:
+
+![Image of Yaktocat](https://octodex.github.com/images/yaktocat.png)
+
+
+smina which is a fork of Autodock Vina (http://vina.scripps.edu/) that 
 focuses on improving scoring and minimization.  Changes from the
 standard Vina (version 1.1.2) include:
  -comprehensive support for ligand molecular formats (via OpenBabel)*
