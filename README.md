@@ -1,4 +1,8 @@
+<<<<<<< HEAD:README.md
 gnm smina is a fork of Autodock Vina (http://vina.scripps.edu/) that 
+=======
+gnm is a fork of smina which is a fork of Autodock Vina (http://vina.scripps.edu/) that 
+>>>>>>> 510350d9d1a4286500253957faea297753d44954:README
 focuses on improving scoring and minimization.  Changes from the
 standard Vina (version 1.1.2) include:
  -comprehensive support for ligand molecular formats (via OpenBabel)*
