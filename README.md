@@ -1,4 +1,4 @@
-smina is a fork of Autodock Vina (http://vina.scripps.edu/) that 
+gnm smina is a fork of Autodock Vina (http://vina.scripps.edu/) that 
 focuses on improving scoring and minimization.  Changes from the
 standard Vina (version 1.1.2) include:
  -comprehensive support for ligand molecular formats (via OpenBabel)*
@@ -27,6 +27,7 @@ dependencies are boost (1.54) and openbabel.  A static binary is provided
 in case these dependencies cannot be met (however, it probably still will
 not work if the kernel is older than 2.6.24).
 
+```
 Input:
   -r [ --receptor ] arg rigid part of the receptor (PDBQT)
   --flex arg            flexible side chains, if any (PDBQT)
@@ -108,7 +109,7 @@ Information (optional):
   --help_hidden         display usage summary with hidden options
   --version             display program version
 
-
+```
 
 
 
