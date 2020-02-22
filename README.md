@@ -9,7 +9,7 @@ Eclipse IDE for C/C++ Developers Version: Oxygen.3a Release (4.7.3a)
 
 It has been setup such that you can import the project as a existing project to workspace:
 
-![Image of Yaktocat](https://octodex.github.com/images/yaktocat.png)
+![Image of Import](../assets/import.png?raw=true)
 
 
 smina which is a fork of Autodock Vina (http://vina.scripps.edu/) that 
