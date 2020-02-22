@@ -7,15 +7,17 @@ This fork of smina includes a disclosed (FINALLY!) algorithm for global optimiza
 Eclipse IDE for C/C++ Developers Version: 2019-12 (4.14.0)
 Eclipse IDE for C/C++ Developers Version: Oxygen.3a Release (4.7.3a)
 
-It has been setup such that you can import the project as an existing project to workspace:
+The project has been setup such that you can import it as an existing project to workspace:
 
 ![Image of Import](../assets/import.png?raw=true)
 
-other versions of eclipse might also work fine. Everybody who is a commandline enthusiast can treat the project as a makefile-project as usual.
+Other versions of eclipse might also work fine. 
+
+Everybody who is a commandline enthusiast can treat the project as a makefile-project as usual.
 
 ## Performance
 
-Utilizing the gnm optimizer can enable researchers to calculate faster and better results of their respective protein-ligand docking problem on very few resources. That is based on the popular autodock vina/smina docking software.
+Utilizing the gnm optimizer can enable researchers to calculate faster and better results of their respective protein-ligand docking problem on very few resources. That is if you are used to work with the popular autodock vina/smina docking software.
 
 A comparison of computational speed and accuracy is exhibitable in the following:
 
@@ -23,19 +25,22 @@ A comparison of computational speed and accuracy is exhibitable in the following
 
 The image shows a comparisaon of computation time and computed energies of target human glyci-
 namide ribonucleotide synthetase (PDB: 2QK4, [DUD-Database 2006](http://dud.docking.org/r2/)) with Autodock
-Smina (red) and the stochastic global newton method (blue)
+Smina (red) and the global newton method (blue)
 
-The Receiver-Operator-Characteristic (ROC) of the calucations show that the computed energies are indeed resulting in more accurate Rankings of true binders as decoy compounds:
+The Receiver-Operator-Characteristic (ROC) of the calucations shows that the computed energies are indeed resulting in more accurate Rankings of true binders as decoy compounds:
 
-### ROC GNM
-![Image of ROCSMINA](../assets/roccomparegnm.png?raw=true)
+### ROC SMINA vs GNM
 
-### ROC SMINA
-
-![Image of ROCSMINA](../assets/roccomparesmina.png?raw=true)
+![Image of ROCSMINA](../assets/roccompare.png?raw=true)
 
 
-## Usage
+# Reference
+
+This work has been a collaboration with Konrad-Zuse-Institue Berlin and Technical University Berlin. If you want to get more insight in the mathematical workings, you can find further reference [here](https://opus4.kobv.de/opus4-zib/frontdoor/index/index/start/4/rows/10/sortfield/score/sortorder/desc/searchtype/simple/query/Bender/docId/7707)
+
+Please cite accordingly if you find this useful.
+ 
+# Usage
 
 The program is executed as usual with the following output upon parameterless execution.
 ```
@@ -128,8 +133,52 @@ The additional option `--gnm` is by default false, however usage of the original
 
 There is a trade-off between number of optimizations specified with the `--exhaustiveness`-parameter and the `--minimize_iters`-parameter. Empirically the method has shown a good performance with the ratio of `--exhaustiveness 300` and `--minimize_iters 500` but results may vary with different cases.
 
-The optimizer can be configured with a configuration file. You can find an example in the example folder in the `conf.txt`-file. Additional pdbt-files for a test run can be found in the example folder as well.
+The optimizer can be configured with a configuration file. You can find an example in the example folder in the `conf.txt`-file. Additional pdbt-files for a test run can be found in the example folder as well. Once you have a build of the software ready, put the the built executable into the example folder and run:
 
+```cpp
+  ./smina --config conf.txt
+```
+To further explain what happens with this configuration, lets run this in the example folder:
+```cpp
+  $ cat conf.txt
+  
+    receptor = gart.pdbqt
+    ligand = xx07.pdbqt
+    out = test.pdbqt
+
+    center_x = 19.6
+    center_y = 2.3
+    center_z = 22.6
+    size_x = 62.0
+    size_y = 69.7
+    size_z = 70.2
+
+    ### mandatory do not change ####
+    local_only = false
+    gnm = true
+    minimize = 1
+    ################################
+    
+    approximation = linear
+    cpu = 2
+    scoring = vinardo
+    
+    exhaustiveness = 200
+    minimize_iters = 500
+```
+Everything above `size_z` should be easy to understand. Those variables specify the box and its position to the given receptor-molecule. You can find out how adjust them to your specific problem by using [MGLTools](http://mgltools.scripps.edu/downloads). The autor of Autodock Vina gives a exemplatory introduction of how to set those variables with this [Autodock Vina](http://vina.scripps.edu/tutorial.html). This can be done for our purposes just alike.
+
+We set `local_only = false`,`minimize = 1` and `gnm = true` to use the gnm-optimizer. Do not change this if you want to use the program.
+
+`approximation = linear` can be chosen as you like. Choose between `approximation = spline` and `approximation = exact`. This parameter will most likely depend on your problem. However `approximation = linear` will give you a rough picture of how your compound will bind. Essentially it is more memory extensive.
+
+`cpu = 2` will set you up to use parallel optimization runs. In this case you are using two cores or hyperthreads and the speed up of your calculation will run twice as fast! Run with as many CPUs as possible to get fastest results.
+
+`scoring = vinardo` will use the built in vinardo scoring function.
+
+The parameters `exhaustiveness` and `minimize_iters` can be chosen arbitrarily. As mentioned before. This seemed to be a good trade-off in computation time and accuracy.
+
+# Custom Scoring
 
 The custom scoring file consists of a weight, term description, and optional
 comments on each line.  The numeric parameters of the term description 
@@ -137,6 +186,7 @@ can be varied to parameterize the scoring function.
 Use --print_terms to see all available terms.
 
 Example (all weights 1.0, all term types listed):
+```
 1.0  ad4_solvation(d-sigma=3.6,_s/q=0.01097,_c=8)  desolvation, q determines whether value is charge dependent
 1.0  ad4_solvation(d-sigma=3.6,_s/q=0.01097,_c=8)  in all terms, c is a distance cutoff
 1.0  electrostatic(i=1,_^=100,_c=8)	i is the exponent of the distance, see everything.h for details
@@ -161,7 +211,7 @@ Example (all weights 1.0, all term types listed):
 1.0  num_tors_sqrt
 1.0  num_hydrophobic_atoms
 1.0  ligand_length
-
+```
 
 Atom Type Terms
 You can define custom functionals between pairs of specific atom types:
@@ -175,24 +225,12 @@ atom_type_inverse_power(t1=,t2=,i=0,_^=100,_c=8)	inverse power potential between
 Use `--print_atom_types` to see all available atom types. Note that hydrogens
 are always ignored despite having atom types.
 
-Note that these are all symmetric - you do not need to specify a term for
-(t1,t2) and (t2,t1) (doing so will just double the value of the potential).
+Results from the performace section have been computed using the build-in vinardo-scoring function. One of functionalities that come with smina is to define custom socring functions. The parameters of the scoring function are as follows:
 ```
-Example:  Faking covalent docking.  Consider this custom scoring function:
--0.035579    gauss(o=0,_w=0.5,_c=8)
--0.005156    gauss(o=3,_w=2,_c=8)
-0.840245     repulsion(o=0,_c=8)
--0.035069    hydrophobic(g=0.5,_b=1.5,_c=8)
--0.587439    non_dir_h_bond(g=-0.7,_b=0,_c=8)
-1.923        num_tors_div
--100.0       atom_type_gaussian(t1=Chlorine,t2=Sulfur,o=0,_w=3,_c=8)
+-0.045       gauss(o=0,_w=10.8,_c=8)
+0.8          repulsion(o=0,_c=8)
+-0.035       hydrophobic(g=0,_b=2.5,_c=8)
+-0.6         non_dir_h_bond(g=-0.6,_b=0,_c=8)
+0            num_tors_div
 ```
-All but the last term are the default Vina scoring function.  That last
-term applys a very strong guassian potential between Cl and S.  In the
-system we were docking, we modified the two atoms we wanted to be next
-to each other (because they are known form a covalent bond) to be a chlorine
-and a sulfur (the system is not physical, but that's okay).  Since these
-were the only Cl and S in the system and the term has a large weight,
-the best docking solutions all placed these atoms together.
-The final poses could then be rescored/minimized using just the default
-scoring function.
+These have produced good results as exhibited by [Quiroga R. and Villarreal MA.](https://doi.org/10.1371/journal.pone.0155183). See for further reference.
