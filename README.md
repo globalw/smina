@@ -180,11 +180,11 @@ To further explain what happens with this configuration, lets run this in the ex
     exhaustiveness = 200
     minimize_iters = 500
 ```
-Everything above `size_z` should be easy to understand. Those variables specify the box and its position to the given receptor-molecule. You can find out how adjust them to your specific problem by using [MGLTools](http://mgltools.scripps.edu/downloads). The autor of Autodock Vina gives a exemplatory introduction of how to set those variables with this [Autodock Vina](http://vina.scripps.edu/tutorial.html). This can be done for our purposes just alike.
+Everything above `size_z` should be easy to understand. Those variables specify the box and its position to the given receptor-molecule. You can find out how adjust them to your specific problem by using [MGLTools](http://mgltools.scripps.edu/downloads). The author of Autodock Vina gives a exemplatory introduction of how to set those variables with this [Autodock Vina](http://vina.scripps.edu/tutorial.html). This can be done for our purposes just alike.
 
 We set `local_only = false`,`minimize = 1` and `gnm = true` to use the gnm-optimizer. Do not change this if you want to use the program.
 
-`approximation = linear` can be chosen as you like. Choose between `approximation = spline` and `approximation = exact`. This parameter will most likely depend on your problem. However `approximation = linear` will give you a rough picture of how your compound will bind. Essentially it is more memory extensive.
+`approximation = linear` can be chosen as you like. Choose between `approximation = spline` and `approximation = exact`. This parameter will most likely depend on your problem. However `approximation = linear` will give you a rough picture of how your compound will bind. Essentially it is more memory intensive.
 
 `cpu = 2` will set you up to use parallel optimization runs. In this case you are using two cores or hyperthreads and the speed up of your calculation will run twice as fast! Run with as many CPUs as possible to get fastest results.
 
