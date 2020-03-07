@@ -2,7 +2,7 @@
 
 ## Performance
 
-Utilizing the gnm optimizer can enable researchers to calculate faster and better results of their respective protein-ligand docking problem on very few resources. That is if you are used to work with the popular autodock vina/smina docking software.
+Utilizing the gnm optimizer can enable researchers to calculate faster and better results of their respective protein-ligand docking problem on very few resources. That is if you are used to working with the popular autodock vina/smina docking software.
 
 A comparison of computational speed and accuracy is exhibitable in the following:
 
